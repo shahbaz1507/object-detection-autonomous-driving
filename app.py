@@ -90,10 +90,23 @@ footer {visibility: hidden;}
     margin-bottom: 4px;
 }
 
-[data-testid="stMetric"] {
-    background: #f7f6f2;
-    border-radius: 10px;
-    padding: 12px 10px 8px 10px;
+.risk-row { display: flex; gap: 10px; margin: 6px 0 18px 0; }
+.risk-card { flex: 1; border-radius: 10px; padding: 12px 12px 10px 12px; }
+.risk-card.safe { background: #eaf3de; }
+.risk-card.safe .risk-label { color: #3b6d11; }
+.risk-card.safe .risk-value { color: #27500a; }
+.risk-card.warn { background: #faeeda; }
+.risk-card.warn .risk-label { color: #854f0b; }
+.risk-card.warn .risk-value { color: #633806; }
+.risk-card.danger { background: #fcebeb; }
+.risk-card.danger .risk-label { color: #a32d2d; }
+.risk-card.danger .risk-value { color: #791f1f; }
+.risk-label { font-size: 12.5px; margin: 0; }
+.risk-value { font-size: 22px; font-weight: 700; margin: 2px 0 0; }
+
+@media (max-width: 640px) {
+    .risk-row { flex-direction: column; gap: 8px; }
+    .risk-value { font-size: 18px; }
 }
 
 [data-testid="stFileUploaderDropzone"] {
@@ -167,10 +180,13 @@ with st.container(border=True):
         result_img_rgb = cv2.cvtColor(result_img, cv2.COLOR_BGR2RGB)
         st.image(result_img_rgb, caption="Detection + risk overlay", use_container_width=True)
 
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Safe", risk_counts["SAFE"])
-        col2.metric("Warning", risk_counts["WARNING"])
-        col3.metric("Danger", risk_counts["DANGER"])
+        st.markdown(f"""
+        <div class="risk-row">
+            <div class="risk-card safe"><p class="risk-label">Safe</p><p class="risk-value">{risk_counts['SAFE']}</p></div>
+            <div class="risk-card warn"><p class="risk-label">Warning</p><p class="risk-value">{risk_counts['WARNING']}</p></div>
+            <div class="risk-card danger"><p class="risk-label">Danger</p><p class="risk-value">{risk_counts['DANGER']}</p></div>
+        </div>
+        """, unsafe_allow_html=True)
 
         st.markdown("**Detected in this image**")
         if class_counts:
